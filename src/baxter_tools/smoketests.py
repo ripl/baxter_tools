@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2013-2015, Rethink Robotics
 # All rights reserved.
@@ -31,47 +31,29 @@
 Baxter RSDK Smoke Tests
 """
 
-import traceback
-import threading
 import queue
-
-import rospy
-
-import cv2
-import cv_bridge
-import rospkg
-import std_msgs
-
-from geometry_msgs.msg import (
-    Point,
-    Pose,
-    PoseStamped,
-    Quaternion,
-)
-from sensor_msgs.msg import (
-    Image,
-    JointState,
-)
+import threading
+import traceback
 
 import baxter_dataflow
 import baxter_interface
-
-from baxter_core_msgs.msg import (
-    AnalogIOStates,
-    EndEffectorState,
-)
-from baxter_core_msgs.srv import (
-    ListCameras,
-    SolvePositionIK,
-    SolvePositionIKRequest,
-)
+import cv2
+import cv_bridge
+import rospkg
+import rospy
+import std_msgs
+from baxter_core_msgs.msg import AnalogIOStates, EndEffectorState
+from baxter_core_msgs.srv import ListCameras, SolvePositionIK, SolvePositionIKRequest
 from baxter_interface import CHECK_VERSION
+from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
+from sensor_msgs.msg import Image, JointState
 
 
 class SmokeTest(object):
     """
     Smoke tests base class.
     """
+
     def __init__(self, name):
         self._name = name
         self._rs = baxter_interface.RobotEnable()
@@ -95,11 +77,11 @@ class SmokeTest(object):
             testlog.write(
                 "Test: %s ------ Result: %s\n" %
                 (self._name, "Success" if self.result[0] else "Failure",)
-                )
+            )
             if self.result[0] == False:
                 testlog.write("%s\n%s%s\n" %
-                    ('*' * 40, self.result[1], '*' * 40,)
-                    )
+                              ('*' * 40, self.result[1], '*' * 40,)
+                              )
         print("Results of %s saved to file: %s" % (self._name, filename,))
         print(("------- Result: %s -------\n\n" %
                ("Success" if self.result[0] else "Failure",)))
@@ -119,6 +101,7 @@ class Enable(SmokeTest):
     """
     Verify ability to enable, check state and disable baxter.
     """
+
     def __init__(self, name='Enable'):
         super(Enable, self).__init__(name)
 
@@ -143,6 +126,7 @@ class Messages(SmokeTest):
     """
     Verify messages being published and ability to subscribe.
     """
+
     def __init__(self, name='Messages'):
         super(Messages, self).__init__(name)
 
@@ -162,7 +146,7 @@ class Messages(SmokeTest):
                 5.0
             )
             self.result[0] = True
-        except:
+        except BaseException:
             self.return_failure(traceback.format_exc())
 
 
@@ -170,6 +154,7 @@ class Services(SmokeTest):
     """
     Verify services available and ability to make calls as client.
     """
+
     def __init__(self, name='Services'):
         super(Services, self).__init__(name)
 
@@ -185,13 +170,13 @@ class Services(SmokeTest):
             ikreq = SolvePositionIKRequest()
             pose = PoseStamped(
                 header=std_msgs.msg.Header(
-                stamp=rospy.Time.now(), frame_id='base'),
+                    stamp=rospy.Time.now(), frame_id='base'),
                 pose=Pose(
                     position=Point(
                         x=0.657579481614,
                         y=0.851981417433,
                         z=0.0388352386502,
-                        ),
+                    ),
                     orientation=Quaternion(
                         x=-0.366894936773,
                         y=0.885980397775,
@@ -211,6 +196,7 @@ class Head(SmokeTest):
     """
     Move the head pan and tilt, display image to screen.
     """
+
     def __init__(self, name='Head'):
         super(Head, self).__init__(name)
 
@@ -254,6 +240,7 @@ class MoveArms(SmokeTest):
     """
     Move both arms to numerous joint positions.
     """
+
     def __init__(self, name='MoveArms'):
         super(MoveArms, self).__init__(name)
 
@@ -285,11 +272,11 @@ class MoveArms(SmokeTest):
             # Min Joint Range (e0, e1, s0, s1, w0, w1, w2)
             #     (-1.701, -2.147, -3.054, -0.050, -3.059, -1.571, -3.059)
             joint_moves = (
-                 [0.0, -0.55, 0.0, 0.75, 0.0, 1.26, 0.0],
-                 [0.5, -0.8, 2.8, 0.15, 0.0, 1.9, 2.8],
+                [0.0, -0.55, 0.0, 0.75, 0.0, 1.26, 0.0],
+                [0.5, -0.8, 2.8, 0.15, 0.0, 1.9, 2.8],
                 [-0.1, -0.8, -1.0, 2.5, 0.0, -1.4, -2.8],
-                 [0.0, -0.55, 0.0, 0.75, 0.0, 1.26, 0.0],
-                )
+                [0.0, -0.55, 0.0, 0.75, 0.0, 1.26, 0.0],
+            )
             for move in joint_moves:
                 print("Test: Moving to Joint Positions: ", end=' ')
                 print(", ".join("%.2f" % x for x in move))
@@ -340,6 +327,7 @@ class Grippers(SmokeTest):
     """
     Calibrate and move grippers using torque, position, velocity control.
     """
+
     def __init__(self, name='Grippers'):
         super(Grippers, self).__init__(name)
 
@@ -404,6 +392,7 @@ class BlinkLEDs(SmokeTest):
     """
     Blink Navigator LEDs.
     """
+
     def __init__(self, name='BlinkLEDs'):
         super(BlinkLEDs, self).__init__(name)
 
@@ -430,7 +419,7 @@ class BlinkLEDs(SmokeTest):
                 'right_inner_light',
                 'torso_right_outer_light',
                 'torso_right_inner_light',
-                )
+            )
 
             for itb in itb_names:
                 print("Test: Blink %s" % itb)
@@ -445,6 +434,7 @@ class Cameras(SmokeTest):
     """
     Verify camera publishing and visualization.
     """
+
     def __init__(self, name='Cameras'):
         super(Cameras, self).__init__(name)
 
@@ -456,7 +446,7 @@ class Cameras(SmokeTest):
             '/robot/xdisplay',
             Image,
             queue_size=10
-            )
+        )
 
         def _display(camera, name):
             """
@@ -523,13 +513,13 @@ class Cameras(SmokeTest):
         try:
             print("Enabling robot...")
             self._rs.enable()
-            print ("Test: Verify Left_Hand, Right_Hand, and Head "
-                   "Cameras Present")
+            print("Test: Verify Left_Hand, Right_Hand, and Head "
+                  "Cameras Present")
             camera_names = (
                 'left_hand_camera',
                 'right_hand_camera',
                 'head_camera',
-                )
+            )
             camera_list = _list_cameras()
             for camera_name in camera_names:
                 if not camera_name in camera_list.cameras:

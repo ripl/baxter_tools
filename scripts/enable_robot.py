@@ -31,10 +31,8 @@ import argparse
 import os
 import sys
 
-import rospy
-
 import baxter_interface
-
+import rospy
 from baxter_interface import CHECK_VERSION
 
 
@@ -57,7 +55,7 @@ def main():
                         help='Stop the robot')
     args = parser.parse_args(rospy.myargv()[1:])
 
-    if args.actions == None:
+    if args.actions is None:
         parser.print_usage()
         parser.exit(0, "No action defined")
 
@@ -80,6 +78,7 @@ def main():
         rospy.logerr(e.strerror)
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

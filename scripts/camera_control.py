@@ -31,14 +31,10 @@ import argparse
 import socket
 import sys
 
-import rospy
 import rosgraph
-
+import rospy
 import std_srvs.srv
-
-from baxter_core_msgs.srv import (
-    ListCameras,
-)
+from baxter_core_msgs.srv import ListCameras
 from baxter_interface.camera import CameraController
 
 
@@ -51,7 +47,7 @@ def list_cameras(*_args, **_kwds):
         master = rosgraph.Master('/rostopic')
         resp.cameras
         cam_topics = dict([(cam, "/cameras/%s/image" % cam)
-                               for cam in resp.cameras])
+                           for cam in resp.cameras])
         open_cams = dict([(cam, False) for cam in resp.cameras])
         try:
             topics = master.getPublishedTopics('')
@@ -64,7 +60,7 @@ def list_cameras(*_args, **_kwds):
         for cam in resp.cameras:
             print(("%s%s" % (cam, ("  -  (open)" if open_cams[cam] else ""))))
     else:
-        print ('No cameras found')
+        print('No cameras found')
 
 
 def reset_cameras(*_args, **_kwds):
@@ -76,7 +72,7 @@ def reset_cameras(*_args, **_kwds):
 def enum_cameras(*_args, **_kwds):
     try:
         reset_cameras()
-    except:
+    except BaseException:
         srv_ns = rospy.resolve_name('cameras/reset')
         rospy.logerr("Failed to call reset devices service at %s", srv_ns)
         raise
@@ -98,7 +94,7 @@ def close_camera(camera, *_args, **_kwds):
 def main():
     str_res = ["%rx%r" % (r[0], r[1]) for r in CameraController.MODES]
     fmt_res = ("Valid resolutions:\n[" +
-              ("%s, " * (len(CameraController.MODES) - 1)) + "%s]")
+               ("%s, " * (len(CameraController.MODES) - 1)) + "%s]")
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(fmt_res % tuple(str_res))
@@ -154,6 +150,7 @@ def main():
     rospy.init_node('rsdk_camera_control')
     action(camera, res)
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

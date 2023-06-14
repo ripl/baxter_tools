@@ -27,22 +27,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import errno
 import argparse
+import errno
 import os
-import sys
 import re
-
-import rospy
-
-import std_msgs.msg
+import sys
 
 import baxter_dataflow
-
-from baxter_maintenance_msgs.msg import (
-    UpdateSources,
-    UpdateStatus,
-)
+import rospy
+import std_msgs.msg
+from baxter_maintenance_msgs.msg import UpdateSources, UpdateStatus
 
 
 class Updater(object):
@@ -53,6 +47,7 @@ class Updater(object):
         status_changed:     Fired when the update status changes.  Passes
                             the current UpdateStatus message.
     """
+
     def __init__(self):
         self.status_changed = baxter_dataflow.Signal()
 
@@ -141,17 +136,17 @@ def run_update(updater, uuid):
             print(("Invalid update uuid, '%s'." % (uuid,)))
             nl.done = True
         elif msg.status == UpdateStatus.STS_BUSY:
-            print ("Update already in progress (may be shutting down).")
+            print("Update already in progress (may be shutting down).")
             nl.done = True
         elif msg.status == UpdateStatus.STS_CANCELLED:
-            print ("Update cancelled.")
+            print("Update cancelled.")
             nl.done = True
         elif msg.status == UpdateStatus.STS_ERR:
             print(("Update failed: %s." % (msg.long_description,)))
             nl.done = True
             nl.rc = 1
         elif msg.status == UpdateStatus.STS_LOAD_KEXEC:
-            print ("Robot will now reboot to finish updating...")
+            print("Robot will now reboot to finish updating...")
             nl.rc = 0
         else:
             print(("Updater:  %s" % (msg.long_description)))
@@ -196,7 +191,7 @@ def ros_updateable_version():
         param_name = "rethink/software_version"
         robot_version = rospy.get_param(param_name, None)
         # parse out first 3 digits of robot version tag
-        pattern = ("^([0-9]+)\.([0-9]+)\.([0-9]+)")
+        pattern = ("^([0-9]+)\\.([0-9]+)\\.([0-9]+)")
         match = re.search(pattern, robot_version)
         if not match:
             rospy.logwarn("RobotUpdater: Invalid robot version: %s",
@@ -258,7 +253,7 @@ def main():
     if cmd == 'list':
         updates = updater.list()
         if not len(updates):
-            print ("No available updates")
+            print("No available updates")
         else:
             print(("%-30s%s" % ("Version", "UUID")))
             for update in updates:
@@ -271,11 +266,12 @@ def main():
         msg = ("NOTE: Please plug in any Rethink Electric Parallel Grippers\n"
                "      into the robot now, so that the Gripper Firmware\n"
                "      can be automatically upgraded with the robot.\n")
-        print (msg)
+        print(msg)
         input("Press <Enter> to Continue...")
         if rospy.is_shutdown():
             return 0
         return run_update(updater, uuid)
+
 
 if __name__ == '__main__':
     sys.exit(main())

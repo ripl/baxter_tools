@@ -32,14 +32,10 @@ import argparse
 import os
 import sys
 
-import rospy
-
 import baxter_interface
-
+import rospy
 from baxter_interface import CHECK_VERSION
-from baxter_maintenance_msgs.msg import (
-    CalibrateArmEnable,
-)
+from baxter_maintenance_msgs.msg import CalibrateArmEnable
 
 
 class CalibrateArm(baxter_interface.RobustController):
@@ -69,7 +65,7 @@ def gripper_removed(side):
     gripper = baxter_interface.Gripper(side)
     if gripper.type() != 'custom':
         rospy.logerr("Cannot calibrate with grippers attached."
-                       " Remove grippers before calibration!")
+                     " Remove grippers before calibration!")
         return False
     return True
 
@@ -78,8 +74,8 @@ def main():
     parser = argparse.ArgumentParser()
     required = parser.add_argument_group('required arguments')
     required.add_argument('-l', '--limb', required=True,
-                        choices=['left', 'right'],
-                        help="Calibrate the specified arm")
+                          choices=['left', 'right'],
+                          help="Calibrate the specified arm")
     args = parser.parse_args(rospy.myargv()[1:])
     arm = args.limb
 
@@ -109,12 +105,13 @@ def main():
         except Exception:
             pass
 
-    if error == None:
+    if error is None:
         rospy.loginfo("Calibrate arm finished")
     else:
         rospy.logerr("Calibrate arm failed: %s" % (error,))
 
-    return 0 if error == None else 1
+    return 0 if error is None else 1
+
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -32,14 +32,10 @@ import argparse
 import os
 import sys
 
-import rospy
-
 import baxter_interface
-
+import rospy
 from baxter_interface import CHECK_VERSION
-from baxter_maintenance_msgs.msg import (
-    TareEnable,
-)
+from baxter_maintenance_msgs.msg import TareEnable
 
 
 class Tare(baxter_interface.RobustController):
@@ -70,7 +66,7 @@ def gripper_removed(side):
     gripper = baxter_interface.Gripper(side)
     if gripper.type() != 'custom':
         rospy.logerr("Cannot tare with grippers attached."
-                       " Remove grippers before tare!")
+                     " Remove grippers before tare!")
         return False
     return True
 
@@ -79,8 +75,8 @@ def main():
     parser = argparse.ArgumentParser()
     required = parser.add_argument_group('required arguments')
     required.add_argument('-l', '--limb', required=True,
-                        choices=['left', 'right'],
-                        help='Tare the specified limb')
+                          choices=['left', 'right'],
+                          help='Tare the specified limb')
     args = parser.parse_args(rospy.myargv()[1:])
     limb = args.limb
 
@@ -110,12 +106,13 @@ def main():
         except Exception:
             pass
 
-    if error == None:
+    if error is None:
         rospy.loginfo("Tare finished")
     else:
         rospy.logerr("Tare failed: %s" % (error,))
 
-    return 0 if error == None else 1
+    return 0 if error is None else 1
+
 
 if __name__ == '__main__':
     sys.exit(main())

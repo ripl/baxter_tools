@@ -30,15 +30,14 @@
 """
 RSDK Smoke Test Execution
 """
-import sys
-import time
 import argparse
 import re
 import socket
+import sys
+import time
 import traceback
 
 import rospy
-
 from baxter_tools import smoketests
 
 
@@ -52,7 +51,7 @@ def run_test(tname, fname, proceed):
     except AttributeError:
         print(("Exiting: %s is not a valid smoke test." % tname))
         sys.exit(1)
-    except:
+    except BaseException:
         print("Exiting: failed during intialization.")
         traceback.print_exc()
         sys.exit(1)
@@ -60,7 +59,7 @@ def run_test(tname, fname, proceed):
     cur_test.start_test()
     cur_test.finish_test(fname)
     if (not proceed and cur_test.result[0] == False or
-    'KeyboardInterrupt' in cur_test.result[1]):
+            'KeyboardInterrupt' in cur_test.result[1]):
         print(("Exiting: Failed Test %s" % tname))
         sys.exit(1)
 
@@ -92,9 +91,9 @@ def get_version():
         print(("Exiting: Could not communicate with ROS Master to determine " +
               "Software version"))
         sys.exit(1)
-    except:
+    except BaseException:
         print(("Exiting: Could not determine SW version from param " +
-            "'/rethink/software_version'"))
+               "'/rethink/software_version'"))
         sys.exit(1)
     return version
 
@@ -111,7 +110,7 @@ def main():
     format = argparse.RawTextHelpFormatter
     parser = argparse.ArgumentParser(formatter_class=format)
     parser.add_argument('-p', '--proceed', action='store_true',
-        help="Continue testing after a failed test until all tests complete")
+                        help="Continue testing after a failed test until all tests complete")
     parser.add_argument('-t', '--test', help=test_help())
     args = parser.parse_args(rospy.myargv()[1:])
 
@@ -128,13 +127,13 @@ def main():
                       'Grippers', 'BlinkLEDs', 'Cameras'],
             '1.2.0': ['Enable', 'Messages', 'Services', 'Head', 'MoveArms',
                       'Grippers', 'BlinkLEDs', 'Cameras'],
-            }
         }
+    }
 
     test_dict['version'] = get_version()
     if not test_dict['version'] in list(test_dict['valid_tests'].keys()):
         print(("Exiting: No tests specified for your software version: %s" %
-            (test_dict['version'])))
+               (test_dict['version'])))
         return 1
 
     try:
@@ -149,7 +148,7 @@ def main():
                 (serial, cur_time.tm_mon, cur_time.tm_mday,
                  cur_time.tm_year, test_dict['version'],)
                 )
-    if args.test == None:
+    if args.test is None:
         print('Performing All Tests')
         ros_init()
         for t in test_dict['valid_tests'][test_dict['version']]:
@@ -163,6 +162,7 @@ def main():
         parser.print_help()
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

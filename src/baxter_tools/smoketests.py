@@ -344,7 +344,7 @@ class Grippers(SmokeTest):
                 limb.move_to_neutral()
                 rospy.sleep(2.0)
                 print("Test: Verify %s Gripper Type" % (name.capitalize(),))
-                if gripper.type() is not 'electric':
+                if gripper.type() != 'electric':
                     raise NameError("Test Requires Two Electric Grippers")
                 s_topic = 'robot/end_effector/' + name + '_gripper/state'
                 ee_state = rospy.wait_for_message(s_topic,
